@@ -7,7 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SperaApplication {
 
 	public static void main(String[] args) {
+            try {
 		SpringApplication.run(SperaApplication.class, args);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 	}
 
 }
