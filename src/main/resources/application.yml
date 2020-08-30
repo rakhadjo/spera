@@ -22,4 +22,4 @@ spring:
     profiles: docker
     data:
         mongodb:
-            host:api-database
+            host: api-database
