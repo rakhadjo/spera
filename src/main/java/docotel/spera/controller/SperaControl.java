@@ -5,7 +5,9 @@
  */
 package docotel.spera.controller;
 
+import docotel.spera.models.Grade;
 import docotel.spera.models.Position;
+import docotel.spera.repositories.GradeRepository;
 import docotel.spera.repositories.PositionRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,16 @@ public class SperaControl {
     @Autowired
     private PositionRepository positionRepo;
     
+    @Autowired
+    private GradeRepository gradeRepo;
+    
     @GetMapping("/troops/positions")
     public @ResponseBody List<Position> allPositions() {
         return positionRepo.findAll();
+    }
+    
+    @GetMapping("/troops/grades")
+    public @ResponseBody List<Grade> allGrades() {
+        return gradeRepo.findAll();
     }
 }
