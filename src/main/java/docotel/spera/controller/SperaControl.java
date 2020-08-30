@@ -5,8 +5,6 @@
  */
 package docotel.spera.controller;
 
-import docotel.spera.models.Grade;
-import docotel.spera.models.Position;
 import docotel.spera.repositories.GradeRepository;
 import docotel.spera.repositories.PositionRepository;
 import java.util.List;
