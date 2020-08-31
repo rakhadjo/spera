@@ -41,21 +41,24 @@ public class SperaControl {
     private TroopRepository troopsRepo;
     
     @GetMapping("/troops/positions")
-    public ResponseEntity<List> allPositions(@RequestHeader("Authentication") String Authentication) {
+    public ResponseEntity<List> allPositions(
+            @RequestHeader("Authentication") String Authentication) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", "x-trace-id");
         return new ResponseEntity<>(positionRepo.findAll(), headers, HttpStatus.OK);
     }
     
     @GetMapping("/troops/grades")
-    public ResponseEntity<List> allGrades(@RequestHeader("Authentication") String Authentication) {
+    public ResponseEntity<List> allGrades(
+            @RequestHeader("Authentication") String Authentication) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", "x-trace-id");
         return new ResponseEntity<>(gradeRepo.findAll(), headers, HttpStatus.OK);
     }
     
     @GetMapping("/troops/list")
-    public ResponseEntity<List> allTroops(@RequestHeader("Authentication") String Authentication) {
+    public ResponseEntity<List> allTroops(
+            @RequestHeader("Authentication") String Authentication) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", "x-trace-id");
         return new ResponseEntity<>(troopsRepo.findAll(), headers, HttpStatus.OK);
