@@ -7,6 +7,7 @@ package docotel.spera.controller;
 
 import docotel.spera.repositories.GradeRepository;
 import docotel.spera.repositories.PositionRepository;
+import docotel.spera.repositories.TroopRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +32,9 @@ public class SperaControl {
     @Autowired
     private GradeRepository gradeRepo;
     
+    @Autowired
+    private TroopRepository troopsRepo;
+    
     @GetMapping("/troops/positions")
     public ResponseEntity<List> allPositions(@RequestHeader("Authentication") String Authentication) {
         HttpHeaders headers = new HttpHeaders();
@@ -43,5 +47,12 @@ public class SperaControl {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", "x-trace-id");
         return new ResponseEntity<>(gradeRepo.findAll(), headers, HttpStatus.OK);
+    }
+    
+    @GetMapping("/troops/list")
+    public ResponseEntity<List> allTroops() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("x-trace-id", "x-trace-id");
+        return new ResponseEntity<>(troopsRepo.findAll(), headers, HttpStatus.OK);
     }
 }
