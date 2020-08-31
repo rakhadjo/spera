@@ -10,9 +10,11 @@ import docotel.spera.repositories.GradeRepository;
 import docotel.spera.repositories.PositionRepository;
 import docotel.spera.repositories.TroopRepository;
 import docotel.spera.requests.DashboardRequest;
+import docotel.spera.requests.UserProfileRequest;
 import docotel.spera.responses.DashboardResponse;
 import docotel.spera.responses.ResponseBody;
 import docotel.spera.responses.Result;
+import docotel.spera.responses.UserProfileResponse;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -87,5 +89,23 @@ public class SperaControl {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", "x-trace-id");
         return new ResponseEntity(new DashboardResponse(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
+    }
+    
+    @PostMapping("/user/login")
+    public ResponseEntity<org.bson.Document> login(
+            @RequestHeader("Authentication") String Authentication, 
+            @RequestBody UserProfileRequest request) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("x-trace-id", "x-trace-id");
+        try {
+            Troop t = troopsRepo.findByNik(request.nik);
+            UserProfileResponse response = new UserProfileResponse(Result.SUCCESS);
+            response.data = t.toJSON();
+            return new ResponseEntity(response.toJSON(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(
+                    new org.bson.Document("error", e.getMessage()), headers, HttpStatus.BAD_REQUEST
+            );
+        }
     }
 }
