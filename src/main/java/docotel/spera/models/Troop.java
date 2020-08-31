@@ -33,27 +33,28 @@ public class Troop {
     private static final String VALID_STATUS_REGEX
             = "^[0-2]$";
 
-    private String fullname;
-    private String nik;
-    private String position_id;
-    private String grade_id;
-    private String email_docotel;
-    private String mobile_phone;
-    private String status;
-    private String gender;
+    public String fullname;
+    public String nik;
+    public String position_id;
+    public String grade_id;
+    public String email_docotel;
+    public String mobile_phone;
+    public String status;
+    public String gender;
 
     public Troop(String fullname, String nik, String position_id, String grade_id, String email_docotel, String mobile_phone, String status, String gender) {
-        if (emailValid(email_docotel) && mobileValid(mobile_phone) && nikValid(nik) && gradeValid(grade_id) && posValid(position_id) && statusValid(status)) {
-            this.fullname = fullname;
-            this.nik = nik;
-            this.position_id = position_id;
-            this.grade_id = grade_id;
-            this.email_docotel = email_docotel;
-            this.mobile_phone = mobile_phone;
-            this.status = status;
-            this.gender = gender;
-        }
+        this.fullname = fullname;
+        this.nik = nik;
+        this.position_id = position_id;
+        this.grade_id = grade_id;
+        this.email_docotel = email_docotel;
+        this.mobile_phone = mobile_phone;
+        this.status = status;
+        this.gender = gender;
+    }
 
+    public static boolean valid(String email, String mobile_phone, String nik, String grade, String pos, String status) {
+        return emailValid(email) && mobileValid(mobile_phone) && nikValid(nik) && gradeValid(grade) && posValid(pos) && statusValid(status);
     }
 
     private static boolean emailValid(String email) {
@@ -82,14 +83,14 @@ public class Troop {
 
     public org.bson.Document toJSON() {
         return new org.bson.Document()
-                .append("fullname", this.fullname)
-                .append("nik", this.nik)
-                .append("position_id", this.position_id)
-                .append("grade_id", this.grade_id)
-                .append("email_docotel", this.email_docotel)
-                .append("mobile_phone", this.mobile_phone)
-                .append("status", this.status)
-                .append("gender", this.gender);
+                .append("fullname", fullname)
+                .append("nik", nik)
+                .append("position_id", position_id)
+                .append("grade_id", grade_id)
+                .append("email_docotel", email_docotel)
+                .append("mobile_phone", mobile_phone)
+                .append("status", status)
+                .append("gender", gender);
     }
 
 }
