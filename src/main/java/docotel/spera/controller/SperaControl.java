@@ -5,15 +5,20 @@
  */
 package docotel.spera.controller;
 
+import docotel.spera.models.Troop;
 import docotel.spera.repositories.GradeRepository;
 import docotel.spera.repositories.PositionRepository;
 import docotel.spera.repositories.TroopRepository;
+import docotel.spera.responses.ResponseBody;
+import docotel.spera.responses.Result;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,5 +59,19 @@ public class SperaControl {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", "x-trace-id");
         return new ResponseEntity<>(troopsRepo.findAll(), headers, HttpStatus.OK);
+    }
+    
+    @PostMapping("/troops/add")
+    public ResponseEntity<org.bson.Document> addTroop(
+            @RequestHeader("Authentication") String Authentication, 
+            @RequestBody Troop troop) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("x-trace-id", "x-trace-id");
+        try {
+            troopsRepo.save(troop);
+            return new ResponseEntity<>(new ResponseBody(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseBody(Result.ERROR).toJSON(), headers, HttpStatus.BAD_REQUEST);
+        }
     }
 }
