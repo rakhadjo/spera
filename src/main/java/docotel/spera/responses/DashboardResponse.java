@@ -16,19 +16,19 @@ public class DashboardResponse extends ResponseBody {
     public DashboardResponse(Result res) {
         super(res);
         data = new org.bson.Document()
-                .append("total_troops", "73")
+                .append("total_troops", 73)
                 .append("placement", 
                         new org.bson.Document()
-                        .append("jakarta", "30")
-                        .append("yogyakarta", "40")
-                        .append("internship", "3")
+                        .append("jakarta", 30)
+                        .append("yogyakarta", 40)
+                        .append("internship", 3)
                 )
                 .append("position", 
                         new org.bson.Document()
-                        .append("software-engineer", "40")
-                        .append("android-mobile-developer", "10")
-                        .append("ios-mobile-developer", "10")
-                        .append("system-analyst", "13")
+                        .append("software-engineer", 40)
+                        .append("android-mobile-developer", 10)
+                        .append("ios-mobile-developer", 10)
+                        .append("system-analyst", 13)
                 )
                 .append("turnover", 
                         new org.bson.Document()
