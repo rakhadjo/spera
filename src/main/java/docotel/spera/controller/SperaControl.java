@@ -44,11 +44,22 @@ public class SperaControl {
     @Autowired
     private TroopRepository troopsRepo;
     
+    private String xTrace() {
+        java.util.Random rand = new java.util.Random();
+        String newTrace = "";
+        String charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        for (int i = 0; i < 12; i++) {
+            int num = rand.nextInt(charSet.length());
+            newTrace += charSet.charAt(num);
+        }
+        return newTrace;
+    }
+    
     @GetMapping("/troops/positions")
     public ResponseEntity<List> allPositions(
             @RequestHeader("Authentication") String Authentication) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", "x-trace-id");
+        headers.add("x-trace-id", xTrace());
         return new ResponseEntity<>(positionRepo.findAll(), headers, HttpStatus.OK);
     }
     
@@ -56,7 +67,7 @@ public class SperaControl {
     public ResponseEntity<List> allGrades(
             @RequestHeader("Authentication") String Authentication) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", "x-trace-id");
+        headers.add("x-trace-id", xTrace());
         return new ResponseEntity<>(gradeRepo.findAll(), headers, HttpStatus.OK);
     }
     
@@ -64,7 +75,7 @@ public class SperaControl {
     public ResponseEntity<List> allTroops(
             @RequestHeader("Authentication") String Authentication) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", "x-trace-id");
+        headers.add("x-trace-id", xTrace());
         return new ResponseEntity<>(troopsRepo.findAll(), headers, HttpStatus.OK);
     }
     
@@ -73,7 +84,7 @@ public class SperaControl {
             @RequestHeader("Authentication") String Authentication, 
             @RequestBody Troop troop) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", "x-trace-id");
+        headers.add("x-trace-id", xTrace());
         try {
             troopsRepo.save(troop);
             return new ResponseEntity<>(new ResponseBody(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
@@ -87,7 +98,7 @@ public class SperaControl {
             @RequestHeader("Authentication") String Authentication, 
             @RequestBody DashboardRequest request) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", "x-trace-id");
+        headers.add("x-trace-id", xTrace());
         return new ResponseEntity(new DashboardResponse(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
     }
     
@@ -96,7 +107,7 @@ public class SperaControl {
             @RequestHeader("Authentication") String Authentication, 
             @RequestBody UserProfileRequest request) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", "x-trace-id");
+        headers.add("x-trace-id", xTrace());
         try {
             Troop t = troopsRepo.findByNik(request.nik);
             UserProfileResponse response = new UserProfileResponse(Result.SUCCESS);
