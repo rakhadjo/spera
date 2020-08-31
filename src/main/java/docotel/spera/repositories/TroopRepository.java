@@ -7,11 +7,14 @@ package docotel.spera.repositories;
 
 import docotel.spera.models.Troop;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
  * @author rakhadjo
  */
 public interface TroopRepository extends MongoRepository<Troop, String> {
+    
+    Troop findByNik(@Param("nik") String nik);
     
 }
