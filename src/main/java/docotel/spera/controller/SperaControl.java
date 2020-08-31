@@ -9,6 +9,8 @@ import docotel.spera.models.Troop;
 import docotel.spera.repositories.GradeRepository;
 import docotel.spera.repositories.PositionRepository;
 import docotel.spera.repositories.TroopRepository;
+import docotel.spera.requests.DashboardRequest;
+import docotel.spera.responses.DashboardResponse;
 import docotel.spera.responses.ResponseBody;
 import docotel.spera.responses.Result;
 import java.util.List;
@@ -76,5 +78,14 @@ public class SperaControl {
         } catch (Exception e) {
             return new ResponseEntity<>(new ResponseBody(Result.ERROR).toJSON(), headers, HttpStatus.BAD_REQUEST);
         }
+    }
+    
+    @PostMapping("/dashboard")
+    public ResponseEntity<org.bson.Document> dashboard(
+            @RequestHeader("Authentication") String Authentication, 
+            @RequestBody DashboardRequest request) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("x-trace-id", "x-trace-id");
+        return new ResponseEntity(new DashboardResponse(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
     }
 }
