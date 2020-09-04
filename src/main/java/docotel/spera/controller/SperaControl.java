@@ -118,7 +118,7 @@ public class SperaControl {
             @RequestHeader("Authentication") String Authentication) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", xTrace());
-        return new ResponseEntity<>(troopsRepo.findAll(), headers, HttpStatus.OK);
+        return new ResponseEntity(troopsRepo.findAll(), headers, HttpStatus.OK);
     }
 
     @PostMapping("/troops/add")
