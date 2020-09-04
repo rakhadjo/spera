@@ -5,13 +5,13 @@
  */
 package docotel.spera.logrepos;
 
-import docotel.spera.models.Position;
+import docotel.spera.log.GetPositionsLogEntry;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  *
  * @author rakhadjo
  */
-public interface GetPositionsLogRepo extends MongoRepository<Position, String> {
+public interface GetPositionsLogRepo extends MongoRepository<GetPositionsLogEntry, String> {
     
 }
