@@ -5,19 +5,17 @@
  */
 package docotel.spera.controller;
 
-import docotel.spera.log.GetGradesLogEntry;
-import docotel.spera.logrepos.GetGradesLogRepo;
+import docotel.spera.log.*;
+import docotel.spera.logrepos.*;
 import docotel.spera.models.Troop;
 import docotel.spera.repositories.GradeRepository;
 import docotel.spera.repositories.PositionRepository;
 import docotel.spera.repositories.TroopRepository;
 import docotel.spera.requests.DashboardRequest;
 import docotel.spera.requests.UserProfileRequest;
-import docotel.spera.responses.DashboardResponse;
-import docotel.spera.responses.GetGradesResponse;
-import docotel.spera.responses.ResponseBody;
-import docotel.spera.responses.Result;
-import docotel.spera.responses.UserProfileResponse;
+
+import docotel.spera.responses.*;
+
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -64,14 +62,33 @@ public class SperaControl {
 
     @GetMapping("/troops/positions")
     public ResponseEntity<List> allPositions(
-            @RequestHeader("Authentication") String Authentication) {
+            @RequestHeader("Authentication") String Authentication,
+            HttpServletRequest request) {
+        Timestamp t1 = new Timestamp(new Date().getTime());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", xTrace());
-        return new ResponseEntity<>(positionRepo.findAll(), headers, HttpStatus.OK);
+        GetPositionsResponse rb = new GetPositionsResponse(Result.SUCCESS);
+        rb.data = positionRepo.findAll();
+        String trace = xTrace();
+        headers.add("x-trace-id", trace);
+        
+        GetPositionsLogEntry entry = new GetPositionsLogEntry();
+        entry.host_ip = request.getRemoteHost();
+        entry.client_ip = request.getRemoteAddr();
+        entry.request_header = new Document("Authentication", Authentication);
+        entry.request_body = null;
+        entry.response_header = new Document("x-trace-id", trace);
+        entry.response_body = rb.toJSON();
+        entry.nik = null;
+        entry.request_datetime = t1;
+        entry.response_datetime = new Timestamp(new Date().getTime());
+        
+        getPositionsLogRepo.save(entry);
+        
+        return new ResponseEntity(positionRepo.findAll(), headers, HttpStatus.OK);
     }
 
     @GetMapping("/troops/grades")
-    public ResponseEntity<GetGradesResponse> allGrades(
+    public ResponseEntity<List> allGrades(
             @RequestHeader("Authentication") String Authentication,
             HttpServletRequest request) {
         Timestamp t1 = new Timestamp(new Date().getTime());
@@ -93,7 +110,7 @@ public class SperaControl {
         entry.response_datetime = new Timestamp(new Date().getTime());
         
         getGradesLogRepo.save(entry);
-        return new ResponseEntity(rb.toJSON(), headers, HttpStatus.OK);
+        return new ResponseEntity(rb.data, headers, HttpStatus.OK);
     }
 
     @GetMapping("/troops/list")
@@ -101,7 +118,7 @@ public class SperaControl {
             @RequestHeader("Authentication") String Authentication) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", xTrace());
-        return new ResponseEntity<>(troopsRepo.findAll(), headers, HttpStatus.OK);
+        return new ResponseEntity(troopsRepo.findAll(), headers, HttpStatus.OK);
     }
 
     @PostMapping("/troops/add")
@@ -147,4 +164,7 @@ public class SperaControl {
     
     @Autowired
     private GetGradesLogRepo getGradesLogRepo;
+    
+    @Autowired
+    private GetPositionsLogRepo getPositionsLogRepo;
 }
