@@ -160,13 +160,31 @@ public class SperaControl {
     }
 
     @PostMapping("/dashboard")
-    public ResponseEntity<org.bson.Document> dashboard(
+    public ResponseEntity<DashboardResponse> dashboard(
             @RequestHeader("Authentication") String Authentication,
             @RequestBody DashboardRequest request, 
             HttpServletRequest request2) {
+        Timestamp t1 = new Timestamp(new Date().getTime());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", xTrace());
-        return new ResponseEntity(new DashboardResponse(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
+        DashboardResponse rb = new DashboardResponse(Result.SUCCESS);
+        String trace = xTrace();
+        headers.add("x-trace-id", trace);
+        
+        GetDashboardLogEntry entry = new GetDashboardLogEntry();
+        entry.host_ip = request2.getRemoteHost();
+        entry.client_ip = request2.getRemoteAddr();
+        entry.request_header = new Document("Authentication", Authentication);
+        entry.request_body = null;
+        entry.response_header = new Document("x-trace-id", trace);
+        entry.response_body = rb.toJSON();
+        entry.nik = null;
+        entry.request_datetime = t1;
+        entry.response_datetime = new Timestamp(new Date().getTime());
+        entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+        entry.is_error = false;
+        
+        getDashboardLogRepo.save(entry);
+        return new ResponseEntity(rb.toJSON(), headers, HttpStatus.OK);
     }
 
     @PostMapping("/user/login")
@@ -196,4 +214,7 @@ public class SperaControl {
     
     @Autowired
     private GetTroopsLogRepo getTroopsLogRepo;
+    
+    @Autowired
+    private GetDashboardLogRepo getDashboardLogRepo;
 }
