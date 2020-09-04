@@ -8,9 +8,7 @@ package docotel.spera.controller;
 import docotel.spera.log.*;
 import docotel.spera.logrepos.*;
 import docotel.spera.models.Troop;
-import docotel.spera.repositories.GradeRepository;
-import docotel.spera.repositories.PositionRepository;
-import docotel.spera.repositories.TroopRepository;
+import docotel.spera.repositories.*;
 import docotel.spera.requests.DashboardRequest;
 import docotel.spera.requests.UserProfileRequest;
 
@@ -81,10 +79,12 @@ public class SperaControl {
         entry.nik = null;
         entry.request_datetime = t1;
         entry.response_datetime = new Timestamp(new Date().getTime());
+        entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+        entry.is_error = false;
         
         getPositionsLogRepo.save(entry);
         
-        return new ResponseEntity(positionRepo.findAll(), headers, HttpStatus.OK);
+        return new ResponseEntity(rb.data, headers, HttpStatus.OK);
     }
 
     @GetMapping("/troops/grades")
@@ -108,46 +108,114 @@ public class SperaControl {
         entry.nik = null;
         entry.request_datetime = t1;
         entry.response_datetime = new Timestamp(new Date().getTime());
+        entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+        entry.is_error = false;
         
         getGradesLogRepo.save(entry);
         return new ResponseEntity(rb.data, headers, HttpStatus.OK);
     }
 
     @GetMapping("/troops/list")
-    public ResponseEntity<List> allTroops(
-            @RequestHeader("Authentication") String Authentication) {
+    public ResponseEntity<GetTroopsResponse> allTroops(
+            @RequestHeader("Authentication") String Authentication, 
+            HttpServletRequest request) {
+        Timestamp t1 = new Timestamp(new Date().getTime());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", xTrace());
-        return new ResponseEntity(troopsRepo.findAll(), headers, HttpStatus.OK);
+        GetTroopsResponse rb = new GetTroopsResponse(Result.SUCCESS);
+        rb.data = troopsRepo.findAll();
+        String trace = xTrace();
+        headers.add("x-trace-id", trace);
+        
+        GetTroopsLogEntry entry = new GetTroopsLogEntry();
+        entry.host_ip = request.getRemoteHost();
+        entry.client_ip = request.getRemoteAddr();
+        entry.request_header = new Document("Authentication", Authentication);
+        entry.request_body = null;
+        entry.response_header = new Document("x-trace-id", trace);
+        entry.response_body = rb.toJSON();
+        entry.nik = null;
+        entry.request_datetime = t1;
+        entry.response_datetime = new Timestamp(new Date().getTime());
+        entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+        entry.is_error = false;
+        
+        getTroopsLogRepo.save(entry);
+        return new ResponseEntity(rb.toJSON(), headers, HttpStatus.OK);
     }
 
     @PostMapping("/troops/add")
     public ResponseEntity<org.bson.Document> addTroop(
             @RequestHeader("Authentication") String Authentication,
-            @RequestBody Troop troop) {
+            @RequestBody Troop troop, 
+            HttpServletRequest request) {
+        Timestamp t1 = new Timestamp(new Date().getTime());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", xTrace());
+        ResponseBody rb;
+        String trace = xTrace();
+        headers.add("x-trace-id", trace);
+        
+        PostTroopsLogEntry entry = new PostTroopsLogEntry();
+        entry.host_ip = request.getRemoteHost();
+        entry.client_ip = request.getRemoteAddr();
+        entry.request_header = new Document("Authentication", Authentication);
+        entry.request_body = troop.toJSON();
+        entry.response_header = new Document("x-trace-id", trace);
+        
+        entry.nik = null;
+        entry.request_datetime = t1;
+        entry.response_datetime = new Timestamp(new Date().getTime());
+        
         try {
             troopsRepo.save(troop);
-            return new ResponseEntity<>(new ResponseBody(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
+            entry.is_error = false;
+            entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+            rb = new ResponseBody(Result.SUCCESS);
+            entry.response_body = rb.toJSON();
+            postTroopsLogRepo.save(entry);
+            return new ResponseEntity(new ResponseBody(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseBody(Result.ERROR).toJSON(), headers, HttpStatus.BAD_REQUEST);
+            entry.is_error = true;
+            entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+            rb = new ResponseBody(Result.ERROR);
+            entry.response_body = rb.toJSON();
+            postTroopsLogRepo.save(entry);
+            return new ResponseEntity(new ResponseBody(Result.ERROR).toJSON(), headers, HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/dashboard")
-    public ResponseEntity<org.bson.Document> dashboard(
+    public ResponseEntity<DashboardResponse> dashboard(
             @RequestHeader("Authentication") String Authentication,
-            @RequestBody DashboardRequest request) {
+            @RequestBody DashboardRequest request, 
+            HttpServletRequest request2) {
+        Timestamp t1 = new Timestamp(new Date().getTime());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", xTrace());
-        return new ResponseEntity(new DashboardResponse(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
+        DashboardResponse rb = new DashboardResponse(Result.SUCCESS);
+        String trace = xTrace();
+        headers.add("x-trace-id", trace);
+        
+        GetDashboardLogEntry entry = new GetDashboardLogEntry();
+        entry.host_ip = request2.getRemoteHost();
+        entry.client_ip = request2.getRemoteAddr();
+        entry.request_header = new Document("Authentication", Authentication);
+        entry.request_body = null;
+        entry.response_header = new Document("x-trace-id", trace);
+        entry.response_body = rb.toJSON();
+        entry.nik = null;
+        entry.request_datetime = t1;
+        entry.response_datetime = new Timestamp(new Date().getTime());
+        entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+        entry.is_error = false;
+        
+        getDashboardLogRepo.save(entry);
+        return new ResponseEntity(rb.toJSON(), headers, HttpStatus.OK);
     }
 
     @PostMapping("/user/login")
     public ResponseEntity<org.bson.Document> login(
             @RequestHeader("Authentication") String Authentication,
-            @RequestBody UserProfileRequest request) {
+            @RequestBody UserProfileRequest request, 
+            HttpServletRequest request2) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", xTrace());
         try {
@@ -167,4 +235,13 @@ public class SperaControl {
     
     @Autowired
     private GetPositionsLogRepo getPositionsLogRepo;
+    
+    @Autowired
+    private GetTroopsLogRepo getTroopsLogRepo;
+    
+    @Autowired
+    private GetDashboardLogRepo getDashboardLogRepo;
+    
+    @Autowired
+    private PostTroopsLogRepo postTroopsLogRepo;
 }
