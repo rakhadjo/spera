@@ -8,9 +8,7 @@ package docotel.spera.controller;
 import docotel.spera.log.*;
 import docotel.spera.logrepos.*;
 import docotel.spera.models.Troop;
-import docotel.spera.repositories.GradeRepository;
-import docotel.spera.repositories.PositionRepository;
-import docotel.spera.repositories.TroopRepository;
+import docotel.spera.repositories.*;
 import docotel.spera.requests.DashboardRequest;
 import docotel.spera.requests.UserProfileRequest;
 
@@ -148,13 +146,39 @@ public class SperaControl {
     @PostMapping("/troops/add")
     public ResponseEntity<org.bson.Document> addTroop(
             @RequestHeader("Authentication") String Authentication,
-            @RequestBody Troop troop) {
+            @RequestBody Troop troop, 
+            HttpServletRequest request) {
+        Timestamp t1 = new Timestamp(new Date().getTime());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", xTrace());
+        ResponseBody rb;
+        String trace = xTrace();
+        headers.add("x-trace-id", trace);
+        
+        PostTroopsLogEntry entry = new PostTroopsLogEntry();
+        entry.host_ip = request.getRemoteHost();
+        entry.client_ip = request.getRemoteAddr();
+        entry.request_header = new Document("Authentication", Authentication);
+        entry.request_body = troop.toJSON();
+        entry.response_header = new Document("x-trace-id", trace);
+        
+        entry.nik = null;
+        entry.request_datetime = t1;
+        entry.response_datetime = new Timestamp(new Date().getTime());
+        
         try {
             troopsRepo.save(troop);
+            entry.is_error = false;
+            entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+            rb = new ResponseBody(Result.SUCCESS);
+            entry.response_body = rb.toJSON();
+            postTroopsLogRepo.save(entry);
             return new ResponseEntity(new ResponseBody(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
         } catch (Exception e) {
+            entry.is_error = true;
+            entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+            rb = new ResponseBody(Result.ERROR);
+            entry.response_body = rb.toJSON();
+            postTroopsLogRepo.save(entry);
             return new ResponseEntity(new ResponseBody(Result.ERROR).toJSON(), headers, HttpStatus.BAD_REQUEST);
         }
     }
@@ -217,4 +241,7 @@ public class SperaControl {
     
     @Autowired
     private GetDashboardLogRepo getDashboardLogRepo;
+    
+    @Autowired
+    private PostTroopsLogRepo postTroopsLogRepo;
 }
