@@ -81,10 +81,12 @@ public class SperaControl {
         entry.nik = null;
         entry.request_datetime = t1;
         entry.response_datetime = new Timestamp(new Date().getTime());
+        entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+        entry.is_error = false;
         
         getPositionsLogRepo.save(entry);
         
-        return new ResponseEntity(positionRepo.findAll(), headers, HttpStatus.OK);
+        return new ResponseEntity(rb.data, headers, HttpStatus.OK);
     }
 
     @GetMapping("/troops/grades")
@@ -108,17 +110,39 @@ public class SperaControl {
         entry.nik = null;
         entry.request_datetime = t1;
         entry.response_datetime = new Timestamp(new Date().getTime());
+        entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+        entry.is_error = false;
         
         getGradesLogRepo.save(entry);
         return new ResponseEntity(rb.data, headers, HttpStatus.OK);
     }
 
     @GetMapping("/troops/list")
-    public ResponseEntity<List> allTroops(
-            @RequestHeader("Authentication") String Authentication) {
+    public ResponseEntity<GetTroopsResponse> allTroops(
+            @RequestHeader("Authentication") String Authentication, 
+            HttpServletRequest request) {
+        Timestamp t1 = new Timestamp(new Date().getTime());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", xTrace());
-        return new ResponseEntity(troopsRepo.findAll(), headers, HttpStatus.OK);
+        GetTroopsResponse rb = new GetTroopsResponse(Result.SUCCESS);
+        rb.data = troopsRepo.findAll();
+        String trace = xTrace();
+        headers.add("x-trace-id", trace);
+        
+        GetTroopsLogEntry entry = new GetTroopsLogEntry();
+        entry.host_ip = request.getRemoteHost();
+        entry.client_ip = request.getRemoteAddr();
+        entry.request_header = new Document("Authentication", Authentication);
+        entry.request_body = null;
+        entry.response_header = new Document("x-trace-id", trace);
+        entry.response_body = rb.toJSON();
+        entry.nik = null;
+        entry.request_datetime = t1;
+        entry.response_datetime = new Timestamp(new Date().getTime());
+        entry.elapsed_time = entry.response_datetime.getTime() - entry.request_datetime.getTime();
+        entry.is_error = false;
+        
+        getTroopsLogRepo.save(entry);
+        return new ResponseEntity(rb.toJSON(), headers, HttpStatus.OK);
     }
 
     @PostMapping("/troops/add")
@@ -129,16 +153,17 @@ public class SperaControl {
         headers.add("x-trace-id", xTrace());
         try {
             troopsRepo.save(troop);
-            return new ResponseEntity<>(new ResponseBody(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
+            return new ResponseEntity(new ResponseBody(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseBody(Result.ERROR).toJSON(), headers, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new ResponseBody(Result.ERROR).toJSON(), headers, HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/dashboard")
     public ResponseEntity<org.bson.Document> dashboard(
             @RequestHeader("Authentication") String Authentication,
-            @RequestBody DashboardRequest request) {
+            @RequestBody DashboardRequest request, 
+            HttpServletRequest request2) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", xTrace());
         return new ResponseEntity(new DashboardResponse(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
@@ -147,7 +172,8 @@ public class SperaControl {
     @PostMapping("/user/login")
     public ResponseEntity<org.bson.Document> login(
             @RequestHeader("Authentication") String Authentication,
-            @RequestBody UserProfileRequest request) {
+            @RequestBody UserProfileRequest request, 
+            HttpServletRequest request2) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", xTrace());
         try {
@@ -167,4 +193,7 @@ public class SperaControl {
     
     @Autowired
     private GetPositionsLogRepo getPositionsLogRepo;
+    
+    @Autowired
+    private GetTroopsLogRepo getTroopsLogRepo;
 }
