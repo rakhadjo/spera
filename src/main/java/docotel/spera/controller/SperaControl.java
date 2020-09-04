@@ -5,6 +5,8 @@
  */
 package docotel.spera.controller;
 
+import docotel.spera.log.GetGradesLogEntry;
+import docotel.spera.logrepos.GetGradesLogRepo;
 import docotel.spera.models.Troop;
 import docotel.spera.repositories.GradeRepository;
 import docotel.spera.repositories.PositionRepository;
@@ -12,10 +14,15 @@ import docotel.spera.repositories.TroopRepository;
 import docotel.spera.requests.DashboardRequest;
 import docotel.spera.requests.UserProfileRequest;
 import docotel.spera.responses.DashboardResponse;
+import docotel.spera.responses.GetGradesResponse;
 import docotel.spera.responses.ResponseBody;
 import docotel.spera.responses.Result;
 import docotel.spera.responses.UserProfileResponse;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,16 +41,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 @RequestMapping("/api")
 public class SperaControl {
-    
+
     @Autowired
     private PositionRepository positionRepo;
-    
+
     @Autowired
     private GradeRepository gradeRepo;
-    
+
     @Autowired
     private TroopRepository troopsRepo;
-    
+
     private String xTrace() {
         java.util.Random rand = new java.util.Random();
         String newTrace = "";
@@ -54,7 +61,7 @@ public class SperaControl {
         }
         return newTrace;
     }
-    
+
     @GetMapping("/troops/positions")
     public ResponseEntity<List> allPositions(
             @RequestHeader("Authentication") String Authentication) {
@@ -62,15 +69,33 @@ public class SperaControl {
         headers.add("x-trace-id", xTrace());
         return new ResponseEntity<>(positionRepo.findAll(), headers, HttpStatus.OK);
     }
-    
+
     @GetMapping("/troops/grades")
-    public ResponseEntity<List> allGrades(
-            @RequestHeader("Authentication") String Authentication) {
+    public ResponseEntity<GetGradesResponse> allGrades(
+            @RequestHeader("Authentication") String Authentication,
+            HttpServletRequest request) {
+        Timestamp t1 = new Timestamp(new Date().getTime());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", xTrace());
-        return new ResponseEntity<>(gradeRepo.findAll(), headers, HttpStatus.OK);
+        GetGradesResponse rb = new GetGradesResponse(Result.SUCCESS);
+        rb.data = gradeRepo.findAll();
+        String trace = xTrace();
+        headers.add("x-trace-id", trace);
+        
+        GetGradesLogEntry entry = new GetGradesLogEntry();
+        entry.host_ip = request.getRemoteHost();
+        entry.client_ip = request.getRemoteAddr();
+        entry.request_header = new Document("Authentication", Authentication);
+        entry.request_body = null;
+        entry.response_header = new Document("x-trace-id", trace);
+        entry.response_body = rb.toJSON();
+        entry.nik = null;
+        entry.request_datetime = t1;
+        entry.response_datetime = new Timestamp(new Date().getTime());
+        
+        getGradesLogRepo.save(entry);
+        return new ResponseEntity(rb.toJSON(), headers, HttpStatus.OK);
     }
-    
+
     @GetMapping("/troops/list")
     public ResponseEntity<List> allTroops(
             @RequestHeader("Authentication") String Authentication) {
@@ -78,10 +103,10 @@ public class SperaControl {
         headers.add("x-trace-id", xTrace());
         return new ResponseEntity<>(troopsRepo.findAll(), headers, HttpStatus.OK);
     }
-    
+
     @PostMapping("/troops/add")
     public ResponseEntity<org.bson.Document> addTroop(
-            @RequestHeader("Authentication") String Authentication, 
+            @RequestHeader("Authentication") String Authentication,
             @RequestBody Troop troop) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", xTrace());
@@ -92,19 +117,19 @@ public class SperaControl {
             return new ResponseEntity<>(new ResponseBody(Result.ERROR).toJSON(), headers, HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     @PostMapping("/dashboard")
     public ResponseEntity<org.bson.Document> dashboard(
-            @RequestHeader("Authentication") String Authentication, 
+            @RequestHeader("Authentication") String Authentication,
             @RequestBody DashboardRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", xTrace());
         return new ResponseEntity(new DashboardResponse(Result.SUCCESS).toJSON(), headers, HttpStatus.OK);
     }
-    
+
     @PostMapping("/user/login")
     public ResponseEntity<org.bson.Document> login(
-            @RequestHeader("Authentication") String Authentication, 
+            @RequestHeader("Authentication") String Authentication,
             @RequestBody UserProfileRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-trace-id", xTrace());
@@ -119,4 +144,7 @@ public class SperaControl {
             );
         }
     }
+    
+    @Autowired
+    private GetGradesLogRepo getGradesLogRepo;
 }
