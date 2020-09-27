@@ -1,0 +1,17 @@
+language: java
+jdk: oraclejdk11
+os: macos
+
+services:
+  - mysql
+  - mongodb
+
+git: 
+  - depth: false
+  - branch:
+    - only: 
+      - master
+      - travis
+
+script:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
