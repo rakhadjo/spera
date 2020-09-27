@@ -212,20 +212,24 @@ public class SperaControl {
     }
 
     @PostMapping("/user/login")
-    public ResponseEntity<org.bson.Document> login(
+    public ResponseEntity<UserProfileResponse> login(
             @RequestHeader("Authentication") String Authentication,
             @RequestBody UserProfileRequest request, 
             HttpServletRequest request2) {
+        Timestamp t1 = new Timestamp(new Date().getTime());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-trace-id", xTrace());
+        UserProfileResponse rb;
+        String trace = xTrace();
+        headers.add("x-trace-id", trace);
         try {
             Troop t = troopsRepo.findByNik(request.nik);
-            UserProfileResponse response = new UserProfileResponse(Result.SUCCESS);
-            response.data = t.toJSON();
-            return new ResponseEntity(response.toJSON(), headers, HttpStatus.OK);
+            rb = new UserProfileResponse(Result.SUCCESS);
+            rb.data = t.toJSON();
+            return new ResponseEntity(rb.toJSON(), headers, HttpStatus.OK);
         } catch (Exception e) {
+            rb = new UserProfileResponse(Result.ERROR);
             return new ResponseEntity(
-                    new org.bson.Document("error", e.getMessage()), headers, HttpStatus.BAD_REQUEST
+                    rb.toJSON(), headers, HttpStatus.BAD_REQUEST
             );
         }
     }
