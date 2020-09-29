@@ -58,6 +58,12 @@ public class SperaControl {
         return newTrace;
     }
 
+    /**
+     *
+     * @param Authentication
+     * @param request
+     * @return
+     */
     @GetMapping("/troops/positions")
     public ResponseEntity<List> allPositions(
             @RequestHeader("Authentication") String Authentication,
@@ -87,6 +93,12 @@ public class SperaControl {
         return new ResponseEntity(rb.data, headers, HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param Authentication
+     * @param request
+     * @return
+     */
     @GetMapping("/troops/grades")
     public ResponseEntity<List> allGrades(
             @RequestHeader("Authentication") String Authentication,
@@ -115,6 +127,12 @@ public class SperaControl {
         return new ResponseEntity(rb.data, headers, HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param Authentication
+     * @param request
+     * @return
+     */
     @GetMapping("/troops/list")
     public ResponseEntity<GetTroopsResponse> allTroops(
             @RequestHeader("Authentication") String Authentication, 
@@ -143,6 +161,13 @@ public class SperaControl {
         return new ResponseEntity(rb.toJSON(), headers, HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param Authentication
+     * @param troop
+     * @param request
+     * @return
+     */
     @PostMapping("/troops/add")
     public ResponseEntity<org.bson.Document> addTroop(
             @RequestHeader("Authentication") String Authentication,
@@ -183,6 +208,13 @@ public class SperaControl {
         }
     }
 
+    /**
+     *
+     * @param Authentication
+     * @param request
+     * @param request2
+     * @return
+     */
     @PostMapping("/dashboard")
     public ResponseEntity<DashboardResponse> dashboard(
             @RequestHeader("Authentication") String Authentication,
@@ -211,6 +243,13 @@ public class SperaControl {
         return new ResponseEntity(rb.toJSON(), headers, HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param Authentication
+     * @param request
+     * @param request2
+     * @return
+     */
     @PostMapping("/user/login")
     public ResponseEntity<UserProfileResponse> login(
             @RequestHeader("Authentication") String Authentication,
