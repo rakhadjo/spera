@@ -11,9 +11,20 @@ package docotel.spera.requests;
  */
 public class UserProfileRequest extends RequestBody {
     
+    /**
+     *
+     */
     public String nik;
+
+    /**
+     *
+     */
     public String password;
     
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         return super.toJSON()
                 .append("nik", nik)

@@ -15,12 +15,23 @@ import java.util.List;
  */
 public class GetGradesResponse extends ResponseBody {
     
+    /**
+     *
+     */
     public List<Grade> data;
     
+    /**
+     *
+     * @param res
+     */
     public GetGradesResponse(Result res) {
         super(res);
     }
     
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         ArrayList data2 = new ArrayList();
         for (Grade g : data) {

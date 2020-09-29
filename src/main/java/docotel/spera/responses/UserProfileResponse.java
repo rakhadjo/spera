@@ -11,12 +11,23 @@ package docotel.spera.responses;
  */
 public class UserProfileResponse extends ResponseBody {
     
+    /**
+     *
+     */
     public org.bson.Document data;
     
+    /**
+     *
+     * @param res
+     */
     public UserProfileResponse(Result res) {
         super(res);
     }
     
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         return super.toJSON()
                 .append("data", data);

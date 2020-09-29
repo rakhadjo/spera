@@ -14,6 +14,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "log_dashboard")
 public class GetDashboardLogEntry extends LogEntry {
     
+    /**
+     *
+     */
     public GetDashboardLogEntry() {}
     
 }

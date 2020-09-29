@@ -16,10 +16,18 @@ public class ResponseBody {
     private final String role = "admin";
     private final String menu = "home, troops, account";
 
+    /**
+     *
+     * @param res
+     */
     public ResponseBody(Result res) {
         setCodes(res);
     }
 
+    /**
+     *
+     * @param res
+     */
     public void setCodes(Result res) {
         switch (res) {
             case SUCCESS:
@@ -33,10 +41,18 @@ public class ResponseBody {
         }
     }
 
+    /**
+     *
+     * @param message
+     */
     public void setMessage(String message) {
         this.message = message;
     }
 
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         return new org.bson.Document()
                 .append("rc", rc)

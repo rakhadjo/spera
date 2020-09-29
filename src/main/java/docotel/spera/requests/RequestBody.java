@@ -11,10 +11,20 @@ package docotel.spera.requests;
  */
 public class RequestBody {
     
+    /**
+     *
+     */
     public String device_id;
     
+    /**
+     *
+     */
     public RequestBody() {}
     
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         return new org.bson.Document()
                 .append("device_id", device_id)

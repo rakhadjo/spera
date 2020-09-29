@@ -14,12 +14,23 @@ import java.util.ArrayList;
  */
 public class GetTroopsResponse extends ResponseBody {
     
+    /**
+     *
+     */
     public java.util.List<Troop> data;
     
+    /**
+     *
+     * @param res
+     */
     public GetTroopsResponse(Result res) {
         super(res);
     }
     
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         ArrayList data2 = new ArrayList();
         for (Troop t : data) {

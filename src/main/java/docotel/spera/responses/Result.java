@@ -10,6 +10,14 @@ package docotel.spera.responses;
  * @author rakhadjo
  */
 public enum Result {
+
+    /**
+     *
+     */
     SUCCESS,
+
+    /**
+     *
+     */
     ERROR
 }

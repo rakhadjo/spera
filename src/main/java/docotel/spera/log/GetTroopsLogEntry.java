@@ -16,12 +16,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "log_alltroops")
 public class GetTroopsLogEntry extends LogEntry {
     
+    /**
+     *
+     */
     public java.util.List<Troop> data;
     
+    /**
+     *
+     */
     public GetTroopsLogEntry() {
         
     }
     
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         ArrayList data2 = new ArrayList();
         for (Troop t : data) {
