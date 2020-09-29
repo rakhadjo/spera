@@ -11,8 +11,15 @@ package docotel.spera.responses;
  */
 public class DashboardResponse extends ResponseBody {
     
+    /**
+     *
+     */
     public org.bson.Document data;
     
+    /**
+     *
+     * @param res
+     */
     public DashboardResponse(Result res) {
         super(res);
         data = new org.bson.Document()
@@ -47,10 +54,18 @@ public class DashboardResponse extends ResponseBody {
                 );
     }
     
+    /**
+     *
+     * @param data
+     */
     public void setData(org.bson.Document data) {
         this.data = data;
     }
     
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         return super.toJSON()
                 .append("data", data);

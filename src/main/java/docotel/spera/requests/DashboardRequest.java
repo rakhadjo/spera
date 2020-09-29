@@ -11,8 +11,15 @@ package docotel.spera.requests;
  */
 public class DashboardRequest extends RequestBody {
 
+    /**
+     *
+     */
     public String year;
     
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         return super.toJSON()
                 .append("year", year)

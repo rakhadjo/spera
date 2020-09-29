@@ -14,12 +14,23 @@ import java.util.ArrayList;
  */
 public class GetPositionsResponse extends ResponseBody {
     
+    /**
+     *
+     */
     public java.util.List<Position> data;
     
+    /**
+     *
+     * @param res
+     */
     public GetPositionsResponse(Result res) {
         super(res);
     }
     
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         ArrayList data2 = new ArrayList();
         for (Position p : data) {

@@ -14,6 +14,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "log_getgrades")
 public class GetGradesLogEntry extends LogEntry {
     
+    /**
+     *
+     */
     public GetGradesLogEntry() {}
     
 }

@@ -14,6 +14,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "log_getpositions")
 public class GetPositionsLogEntry extends LogEntry {
     
+    /**
+     *
+     */
     public GetPositionsLogEntry() {}
     
 }

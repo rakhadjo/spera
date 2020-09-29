@@ -14,10 +14,25 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "refGrades")
 public class Grade {
     
+    /**
+     *
+     */
     public String grade_id;
+
+    /**
+     *
+     */
     public String grade_romawi;
+
+    /**
+     *
+     */
     public String grade_name;
 
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         return new org.bson.Document()
                 .append("grade_id", grade_id)

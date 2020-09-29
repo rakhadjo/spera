@@ -15,6 +15,11 @@ import org.springframework.data.repository.query.Param;
  */
 public interface TroopRepository extends MongoRepository<Troop, String> {
     
+    /**
+     *
+     * @param nik
+     * @return
+     */
     Troop findByNik(@Param("nik") String nik);
     
 }

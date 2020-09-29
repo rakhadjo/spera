@@ -33,15 +33,57 @@ public class Troop {
     private static final String VALID_STATUS_REGEX
             = "^[0-2]$";
 
+    /**
+     *
+     */
     public String fullname;
+
+    /**
+     *
+     */
     public String nik;
+
+    /**
+     *
+     */
     public String position_id;
+
+    /**
+     *
+     */
     public String grade_id;
+
+    /**
+     *
+     */
     public String email_docotel;
+
+    /**
+     *
+     */
     public String mobile_phone;
+
+    /**
+     *
+     */
     public String status;
+
+    /**
+     *
+     */
     public String gender;
 
+    /**
+     *
+     * @param fullname
+     * @param nik
+     * @param position_id
+     * @param grade_id
+     * @param email_docotel
+     * @param mobile_phone
+     * @param status
+     * @param gender
+     */
     public Troop(String fullname, String nik, String position_id, String grade_id, String email_docotel, String mobile_phone, String status, String gender) {
         this.fullname = fullname;
         this.nik = nik;
@@ -53,6 +95,16 @@ public class Troop {
         this.gender = gender;
     }
 
+    /**
+     *
+     * @param email
+     * @param mobile_phone
+     * @param nik
+     * @param grade
+     * @param pos
+     * @param status
+     * @return
+     */
     public static boolean valid(String email, String mobile_phone, String nik, String grade, String pos, String status) {
         return emailValid(email) && mobileValid(mobile_phone) && nikValid(nik) && gradeValid(grade) && posValid(pos) && statusValid(status);
     }
@@ -81,6 +133,10 @@ public class Troop {
         return Pattern.matches(VALID_STATUS_REGEX, status);
     }
 
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         return new org.bson.Document()
                 .append("fullname", fullname)

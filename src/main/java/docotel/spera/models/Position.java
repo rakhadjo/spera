@@ -14,9 +14,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "refPositions")
 public class Position {
 
+    /**
+     *
+     */
     public String position_id;
+
+    /**
+     *
+     */
     public String position_name;
 
+    /**
+     *
+     * @return
+     */
     public org.bson.Document toJSON() {
         return new org.bson.Document()
                 .append("position_id", position_id)
